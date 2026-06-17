@@ -20,6 +20,8 @@ export type LLMConfigDTO = {
   LLM_key?: string | null;
   LLM_model?: string | null;
   LLM_baseurl?: string | null;
+  // 自定义 Provider 的 API 协议格式：openai | anthropic
+  LLM_format?: string | null;
 };
 
 export type ProviderListItem = {

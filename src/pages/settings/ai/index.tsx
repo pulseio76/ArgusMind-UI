@@ -267,6 +267,7 @@ const AiSettingsPage: React.FC = () => {
                 LLM_custom_model: llmData.LLM_model || '',
                 LLM_custom_baseurl: llmData.LLM_baseurl || '',
                 LLM_custom_key: llmData.LLM_key || '',
+                LLM_custom_format: llmData.LLM_format || 'openai',
               }
             : {}),
         },
@@ -474,6 +475,10 @@ const AiSettingsPage: React.FC = () => {
                         payload.LLM_key = isCustomProvider
                           ? values.LLM_custom_key
                           : values.LLM_key;
+                        if (isCustomProvider) {
+                          payload.LLM_format =
+                            values.LLM_custom_format || 'openai';
+                        }
                         if (
                           !payload.LLM_provider ||
                           !payload.LLM_model ||
@@ -539,12 +544,30 @@ const AiSettingsPage: React.FC = () => {
                                 placeholder="如 my-model"
                                 rules={[{ required: true }]}
                               />
-                              <ProFormText
-                                name="LLM_custom_baseurl"
-                                label="自定义 Base URL"
-                                placeholder="https://example.com/v1"
+                              <ProFormSelect
+                                name="LLM_custom_format"
+                                label="API 格式"
+                                options={[
+                                  { label: 'OpenAI 兼容', value: 'openai' },
+                                  { label: 'Anthropic', value: 'anthropic' },
+                                ]}
+                                tooltip="自定义端点的协议格式。OpenAI 兼容走 /v1/chat/completions；Anthropic 走 /v1/messages"
                                 rules={[{ required: true }]}
                               />
+                              <ProFormDependency name={['LLM_custom_format']}>
+                                {({ LLM_custom_format }) => (
+                                  <ProFormText
+                                    name="LLM_custom_baseurl"
+                                    label="自定义 Base URL"
+                                    placeholder={
+                                      LLM_custom_format === 'anthropic'
+                                        ? 'https://api.example.com/anthropic'
+                                        : 'https://api.example.com/v1'
+                                    }
+                                    rules={[{ required: true }]}
+                                  />
+                                )}
+                              </ProFormDependency>
                               <ProFormText
                                 name="LLM_custom_key"
                                 label="自定义 API Key"
